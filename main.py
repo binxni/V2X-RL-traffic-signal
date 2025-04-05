@@ -59,7 +59,10 @@ def main():
                 state, action, log_prob, reward, next_state, done)
 
             state = next_state
-
+            
+            # step마다 agent에게 알려주기
+            agent.total_steps += 1
+            
             if done:
                 break
 

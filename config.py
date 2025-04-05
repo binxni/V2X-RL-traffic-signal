@@ -23,7 +23,7 @@ ACTION_DIM = 4             # 행동 차원 (ex. 4개의 신호 조합 등)
 HIDDEN_DIM = 64            # NN 히든 레이어 차원
 
 # === 학습 설정 ===
-MAX_EPISODES = 2000         # 총 학습할 에피소드 수
+MAX_EPISODES = 20         # 총 학습할 에피소드 수
 LOG_INTERVAL = 2          # 몇 에피소드마다 로그 출력
 MODEL_SAVE_PATH = os.path.join("models", "ppo_sumo.pth")
 SEED = None                # None이면 매번 랜덤, 아니면 시드 고정

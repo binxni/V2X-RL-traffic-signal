@@ -5,29 +5,29 @@
     <vType id="bus" length="12.00" maxSpeed="22.00" accel="1.2" decel="2.5" sigma="0.3" color="0,1,0" />
     <!-- Passenger Flows -->
     <flow id="-E3_to_E2_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E3" to="E2" vehsPerHour="75" departLane="random" departSpeed="random" />
-    <flow id="-E3_to_-E0_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="150" departLane="random" departSpeed="random" />
+    <flow id="-E3_to_-E0_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="-E3_to_E1_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E3" to="E1" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E3_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E2" to="E3" vehsPerHour="75" departLane="random" departSpeed="random" />
-    <flow id="-E2_to_-E0_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="150" departLane="random" departSpeed="random" />
+    <flow id="-E2_to_-E0_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E1_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E2" to="E1" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="E0_to_E1_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="E0" to="E1" vehsPerHour="75" departLane="random" departSpeed="random" />
-    <flow id="E0_to_E3_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="E0" to="E3" vehsPerHour="150" departLane="random" departSpeed="random" />
+    <flow id="E0_to_E3_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="E0" to="E3" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="E0_to_E2_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="E0" to="E2" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="-E1_to_-E0_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E1" to="-E0" vehsPerHour="75" departLane="random" departSpeed="random" />
-    <flow id="-E1_to_E3_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E1" to="E3" vehsPerHour="150" departLane="random" departSpeed="random" />
+    <flow id="-E1_to_E3_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E1" to="E3" vehsPerHour="75" departLane="random" departSpeed="random" />
     <flow id="-E1_to_E2_passenger_car" type="passenger_car" begin="0.00" end="3600.00" from="-E1" to="E2" vehsPerHour="75" departLane="random" departSpeed="random" />
     <!-- Trucks -->
     <flow id="-E3_to_E2_truck" type="truck" begin="0.00" end="3600.00" from="-E3" to="E2" vehsPerHour="18" departLane="random" departSpeed="random" />
-    <flow id="-E3_to_-E0_truck" type="truck" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="37" departLane="random" departSpeed="random" />
+    <flow id="-E3_to_-E0_truck" type="truck" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="18" departLane="random" departSpeed="random" />
     <flow id="-E3_to_E1_truck" type="truck" begin="0.00" end="3600.00" from="-E3" to="E1" vehsPerHour="18" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E3_truck" type="truck" begin="0.00" end="3600.00" from="-E2" to="E3" vehsPerHour="18" departLane="random" departSpeed="random" />
-    <flow id="-E2_to_-E0_truck" type="truck" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="37" departLane="random" departSpeed="random" />
+    <flow id="-E2_to_-E0_truck" type="truck" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="18" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E1_truck" type="truck" begin="0.00" end="3600.00" from="-E2" to="E1" vehsPerHour="18" departLane="random" departSpeed="random" />
     <!-- Buses -->
     <flow id="-E3_to_E2_bus" type="bus" begin="0.00" end="3600.00" from="-E3" to="E2" vehsPerHour="15" departLane="random" departSpeed="random" />
-    <flow id="-E3_to_-E0_bus" type="bus" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="31" departLane="random" departSpeed="random" />
+    <flow id="-E3_to_-E0_bus" type="bus" begin="0.00" end="3600.00" from="-E3" to="-E0" vehsPerHour="15" departLane="random" departSpeed="random" />
     <flow id="-E3_to_E1_bus" type="bus" begin="0.00" end="3600.00" from="-E3" to="E1" vehsPerHour="15" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E3_bus" type="bus" begin="0.00" end="3600.00" from="-E2" to="E3" vehsPerHour="15" departLane="random" departSpeed="random" />
-    <flow id="-E2_to_-E0_bus" type="bus" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="31" departLane="random" departSpeed="random" />
+    <flow id="-E2_to_-E0_bus" type="bus" begin="0.00" end="3600.00" from="-E2" to="-E0" vehsPerHour="15" departLane="random" departSpeed="random" />
     <flow id="-E2_to_E1_bus" type="bus" begin="0.00" end="3600.00" from="-E2" to="E1" vehsPerHour="15" departLane="random" departSpeed="random" />
 </routes>

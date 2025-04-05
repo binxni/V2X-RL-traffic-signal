@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from collections import namedtuple
+from collections import Counter
+from torch.utils.tensorboard import SummaryWriter
 
 # 경험 저장용 튜플
 Transition = namedtuple(
@@ -56,7 +58,11 @@ class PPOAgent:
         self.clip_eps = clip_eps
         self.epochs = epochs
 
+        # phase 분포 기록용 로그 설정 추가
+        self.phase_counter = Counter()
+        self.writer = SummaryWriter(log_dir="runs/phase_distribution")
         self.memory = []  # Transition 저장 리스트
+        self.total_steps = 0
 
     '''def select_action(self, state):
         # 주어진 상태에서 연속적인 행동 선택 (phase, duration)
@@ -103,6 +109,9 @@ class PPOAgent:
         phase_dist = torch.distributions.Categorical(phase_probs)
         phase = phase_dist.sample().item()
         log_prob = phase_dist.log_prob(torch.tensor(phase))
+        
+        # ✅ phase 카운트 추가
+        self.phase_counter[phase] += 1
 
         # Duration: 정규 분포 기반 샘플링 (혹은 tanh 등 활용)
         #duration = int(np.clip(duration_raw.item(), 5, 60))
@@ -168,8 +177,8 @@ class PPOAgent:
             
             # ✅ 엔트로피 보너스 추가
             entropy = dist.entropy().mean()  # 평균 엔트로피
-            entropy_coeff = 0.01  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
-            total_policy_loss = policy_loss - entropy_coeff * entropy  # 엔트로피를 보너스로 추가
+            entropy_coeff = 0.05  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
+            policy_loss = policy_loss - entropy_coeff * entropy  # 엔트로피를 보너스로 추가
 
             # ✅ Value loss는 그대로
             values = self.value_net(states)
@@ -183,6 +192,17 @@ class PPOAgent:
             self.optimizer_policy.zero_grad()
             policy_loss.backward()
             self.optimizer_policy.step()
+
+
+            # ✅ phase 선택 분포 기록
+            total = sum(self.phase_counter.values())
+            if total > 0:
+                for p in range(4):  # phase 0~3
+                    ratio = self.phase_counter[p] / total
+                    # or self.episode if 있음
+                    self.writer.add_scalar("Phase/Selection_Ratio",
+                                        ratio, self.total_steps)
+            self.phase_counter.clear()  # 에피소드별 초기화
 
         self.memory = []
         return policy_loss.item(), value_loss.item()
