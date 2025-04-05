@@ -69,19 +69,46 @@ class PPOAgent:
         # 경험 저장 함수 -> update()에 사용됨
         self.memory.append(Transition(*args))
 
-    def compute_returns(self, next_state, done):
+# GAE 안쓴 버전
+    '''def compute_returns(self, next_state, done):
         # episode 종료 후 GAE 없이 단순한 cumulative reward 계산(discounted reward)
         returns = []
         R = 0 if done else self.value_net(torch.FloatTensor(next_state)).item()
         for transition in reversed(self.memory):
             R = transition.reward + self.gamma * R
             returns.insert(0, R)
-        return returns
+        return returns'''
+
+
+    
+    def compute_gae(self, next_state, done):
+        
+        values = self.value_net(torch.FloatTensor(
+            [t.state for t in self.memory])).detach().squeeze()
+        next_value = self.value_net(torch.FloatTensor(
+            next_state)).detach() if not done else torch.tensor(0.0)
+        rewards = [t.reward for t in self.memory]
+        masks = [0.0 if t.done else 1.0 for t in self.memory]
+
+        values = torch.cat([values, next_value.unsqueeze(0)])
+        gae = 0
+        returns = []
+
+        LAMBDA = 0.95 
+        
+        for step in reversed(range(len(rewards))):
+            delta = rewards[step] + self.gamma * \
+                values[step + 1] * masks[step] - values[step]
+            gae = delta + self.gamma * LAMBDA * masks[step] * gae
+            returns.insert(0, gae + values[step])  # Advantage + baseline
+
+        return returns, [r - v.item() for r, v in zip(returns, values[:-1])]
+    
 
     def update(self, next_state, done):
         # PPO 핵심 학습 함수 : policy와 value 네트워크 모두 업데이트
         transitions = self.memory
-        returns = self.compute_returns(next_state, done)
+        returns, advantages = self.compute_gae(next_state, done)
         # 마지막 state부터 시작해 backward로 누적 return 계산
         # return = r + v*next_return
 
@@ -103,13 +130,15 @@ class PPOAgent:
 
             # Advantage 계산
             values = self.value_net(states)                     # V(s)
-            advantage = returns - values.detach()               # A_t = R_t - V(s_t)
+            #advantage = returns - values.detach()               # A_t = R_t - V(s_t) (GAE 미적용)
+            advantage = torch.FloatTensor(advantages).unsqueeze(1) #GAE 적용
 
             # PPO Loss 계산 (Clipped Surrogate Objective)
             surrogate1 = ratio * advantage      
             surrogate2 = torch.clamp(
                 ratio, 1.0 - self.clip_eps, 1.0 + self.clip_eps) * advantage
-            policy_loss = -torch.min(surrogate1, surrogate2).mean()
+            policy_loss = -(torch.min(surrogate1, surrogate2) +
+                            0.01 * entropy).mean()
 
             value_loss = nn.MSELoss()(values, returns)
 

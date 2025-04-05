@@ -35,7 +35,8 @@ def main():
     csv_path = f"logs/train_log_{timestamp}.csv"
     with open(csv_path, "w", newline="") as f:
         writer_csv = csv.writer(f)
-        writer_csv.writerow(["Episode", "Reward", "PolicyLoss", "ValueLoss"])
+        writer_csv.writerow(
+            ["Episode", "Reward", "PolicyLoss", "ValueLoss", "AvgWaitingTime"])
 
     os.makedirs("models_backup", exist_ok=True)
 
@@ -66,19 +67,25 @@ def main():
         policy_loss, value_loss = agent.update(next_state, done)
         # Actor & Critic 업데이트 호출
 
+        # --- 평균 대기 시간 계산 ---
+        avg_waiting_time = env.get_average_waiting_time()
+
         # --- 로그 출력 ---
         print(
-            f"[Episode {episode:03d}] Reward: {score:.2f} | Policy Loss: {policy_loss:.4f} | Value Loss: {value_loss:.4f}")
+            f"[Episode {episode:03d}] Reward: {score:.2f} | Policy Loss: {policy_loss:.4f} | Value Loss: {value_loss:.4f} | Avg Waiting Time: {avg_waiting_time:.2f}s")
 
         # --- TensorBoard 로그 기록 ---
         writer.add_scalar("Reward/Total", score, episode)
         writer.add_scalar("Loss/Policy", policy_loss, episode)
         writer.add_scalar("Loss/Value", value_loss, episode)
+        writer.add_scalar("Traffic/Average_Waiting_Time",
+                          avg_waiting_time, episode)
 
         # --- CSV 로그 저장 ---
         with open(csv_path, "a", newline="") as f:
             writer_csv = csv.writer(f)
-            writer_csv.writerow([episode, score, policy_loss, value_loss])
+            writer_csv.writerow(
+                [episode, score, policy_loss, value_loss, avg_waiting_time])
 
         # --- 모델 백업 저장 ---
         backup_path = f"models_backup/ppo_sumo_ep{episode:03d}_{timestamp}.pth"

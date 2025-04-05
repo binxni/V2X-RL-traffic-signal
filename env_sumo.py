@@ -35,7 +35,8 @@ class SumoEnvironment:
             "--random",
             "--seed", seed,
             "--start",
-            "--quit-on-end"
+            "--quit-on-end",
+            "--no-warnings"
         ]
 
         # GUI일 경우에만 창 크기 및 위치 지정
@@ -72,7 +73,7 @@ class SumoEnvironment:
         tls_id = traci.trafficlight.getIDList()[0]
         traci.trafficlight.setPhase(tls_id, action)
 
-    def _get_state(self):
+    '''def _get_state(self):
         # 상태 추출: 신호 상태 + 각 차선의 차량 수, 평균 속도
         state = []
         tls_id = traci.trafficlight.getIDList()[0]
@@ -83,8 +84,37 @@ class SumoEnvironment:
             avg_speed = traci.lane.getLastStepMeanSpeed(lane_id)
             state.extend([veh_count, avg_speed])
 
-        return np.array(state, dtype=np.float32)
+        return np.array(state, dtype=np.float32)'''
+    
+    def _get_state(self):
+        # 상태 추출: 신호 상태 + 주요 진입 차선 4개 + 전체 정지 차량 수 + 전체 평균 속도
+        state = []
 
+        # 1. 신호 상태 (Phase)
+        tls_id = traci.trafficlight.getIDList()[0]
+        state.append(traci.trafficlight.getPhase(tls_id))
+
+        # 2. 주요 진입 차선 ID 리스트
+        main_incoming_lanes = ['-E3_0', '-E2_0',
+                               'E0_0', '-E1_0']  # 북, 남, 서, 동 방향 진입차선
+
+        for lane_id in main_incoming_lanes:
+            veh_count = traci.lane.getLastStepVehicleNumber(lane_id)
+            avg_speed = traci.lane.getLastStepMeanSpeed(lane_id)
+            state.extend([veh_count, avg_speed])
+
+        # 3. 전체 정지 차량 수
+        total_waiting = sum(traci.lane.getLastStepHaltingNumber(l)
+                            for l in traci.lane.getIDList())
+        state.append(total_waiting)
+
+        # 4. 전체 평균 속도
+        speeds = [traci.lane.getLastStepMeanSpeed(
+            l) for l in traci.lane.getIDList()]
+        avg_speed = np.mean(speeds) if speeds else 0.0
+        state.append(avg_speed)
+
+        return np.array(state, dtype=np.float32)
 
     def _compute_reward(self):
         lanes = traci.lane.getIDList()
@@ -102,6 +132,7 @@ class SumoEnvironment:
 
         # 4. 오래 머문 차량 감점 (10초 이상 머무른 차량 수 체크)
         long_waiting_veh = 0
+        # state에서는 4개 주요 진입 차선만 고려하기때문에 약간의 불일치 있을수있음
         for veh_id in traci.vehicle.getIDList():
             waiting_time = traci.vehicle.getWaitingTime(veh_id)
             if waiting_time > 10:  # 10초 이상 대기
@@ -120,3 +151,12 @@ class SumoEnvironment:
     def close(self):
         if traci.isLoaded():
             traci.close()
+
+
+    def get_average_waiting_time(self):
+        # 전체 차량들의 평균 대기 시간 계산
+        veh_ids = traci.vehicle.getIDList()
+        if not veh_ids:
+            return 0.0
+        total_wait = sum(traci.vehicle.getWaitingTime(v) for v in veh_ids)
+        return total_wait / len(veh_ids)
