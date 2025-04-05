@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-04-05 16:33:01 by Eclipse SUMO sumo Version 1.20.0
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="RL_network_fixed_v2.net.xml"/>
+        <route-files value="final_routes_fixed.rou.xml"/>
+        <additional-files value="RL_taz_safe_fixed.add.xml"/>
+    </input>
+
+</configuration>
