@@ -165,6 +165,11 @@ class PPOAgent:
             surr2 = torch.clamp(ratio, 1.0 - self.clip_eps,
                                 1.0 + self.clip_eps) * advantages
             policy_loss = -torch.min(surr1, surr2).mean()
+            
+            # ✅ 엔트로피 보너스 추가
+            entropy = dist.entropy().mean()  # 평균 엔트로피
+            entropy_coeff = 0.01  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
+            total_policy_loss = policy_loss - entropy_coeff * entropy  # 엔트로피를 보너스로 추가
 
             # ✅ Value loss는 그대로
             values = self.value_net(states)
