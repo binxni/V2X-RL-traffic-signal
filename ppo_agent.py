@@ -64,37 +64,7 @@ class PPOAgent:
         self.memory = []  # Transition 저장 리스트
         self.total_steps = 0
 
-    '''def select_action(self, state):
-        # 주어진 상태에서 연속적인 행동 선택 (phase, duration)
-        state_tensor = torch.FloatTensor(state).unsqueeze(0)
-        action = self.policy_net(state_tensor).detach().numpy()[0]
 
-        # phase: 정수 [0, 3], duration: 정수 [5, 60] 범위로 클리핑
-        phase = int(np.clip(action[0], 0, 3))
-        duration = int(np.clip(action[1], 5, 60))
-
-        # 로그 확률은 현재 사용 안 함
-        return np.array([phase, duration]), torch.tensor(0.0)'''
-    
-    '''def select_action(self, state):
-        state_tensor = torch.FloatTensor(state).unsqueeze(0)
-        action_mean = self.policy_net(state_tensor)
-
-        # 정규분포 표준편차 (고정값)
-        action_std = torch.tensor([0.5, 5.0])
-        dist = torch.distributions.Normal(action_mean, action_std)
-
-        # 샘플링
-        action = dist.sample()
-        log_prob = dist.log_prob(action).sum()
-        action = dist.sample().squeeze(0)
-        log_prob = dist.log_prob(action).sum()
-
-        # 클리핑된 실제 적용 값
-        phase = int(torch.clamp(action[0], 0, 3).item())
-        duration = int(torch.clamp(action[1], 5, 60).item())
-
-        return np.array([phase, duration]), log_prob'''
     
     def select_action(self, state):
         state_tensor = torch.FloatTensor(state).unsqueeze(0)

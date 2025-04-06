@@ -97,19 +97,41 @@ class SumoEnvironment(gym.Env):
                            for lane in incoming_lanes)
         return -total_halted'''
 
-    def _compute_reward(self):
-        incoming_lanes = ["-E3_0", "-E1_0", "-E2_0", "E0_0"]
 
-        # 각 차선 정체 차량 수와 평균 속도
+    def _compute_reward(self):
+        # 모든 진입 차선 (각 방향별 3개 차선씩)
+        incoming_lanes = ["-E3_0", "-E3_1", "-E3_2",
+                        "-E1_0", "-E1_1", "-E1_2",
+                        "-E2_0", "-E2_1", "-E2_2",
+                        "E0_0", "E0_1", "E0_2"]
+
+        # 정지 차량 수 (속도 0)
         halts = [traci.lane.getLastStepHaltingNumber(
             lane) for lane in incoming_lanes]
-        speeds = [traci.lane.getLastStepMeanSpeed(lane) for lane in incoming_lanes]
-
         total_halted = sum(halts)
+
+        # 평균 속도
+        speeds = [traci.lane.getLastStepMeanSpeed(lane) for lane in incoming_lanes]
         avg_speed = np.mean(speeds)
 
-        # 보상 = 평균 속도 증가 + 정체 차량 수 감소를 동시에 고려
-        reward = avg_speed - 0.5 * total_halted
+        # 현재 step에서 목적지에 도착한 차량 수
+        arrived_vehicles = traci.simulation.getArrivedNumber()
+
+        # 장시간 정지 차량 수 (예: 30초 이상 정지)
+        long_waiting = 0
+        for veh_id in traci.vehicle.getIDList():
+            speed = traci.vehicle.getSpeed(veh_id)
+            wait_time = traci.vehicle.getWaitingTime(veh_id)
+            if speed < 0.1 and wait_time >= 30:
+                long_waiting += 1
+
+        # ✅ 최종 보상 
+        reward = (
+            -1.0 * total_halted +
+            +1.0 * arrived_vehicles +
+            +2.0 * avg_speed +
+            -0.5 * long_waiting
+        )
 
         return reward
 
