@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="RL_network_fixed.net.xml"/>
+        <route-files value="RL_rou.rou.xml"/>
+        <additional-files value="RL_taz_safe.add.xml"/>
+    </input>
+
+</configuration>

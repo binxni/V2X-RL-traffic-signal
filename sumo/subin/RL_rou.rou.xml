@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- VTypes -->
+    <vType id="passenger_car" length="5.00" maxSpeed="30.00" accel="2.6" decel="4.5" sigma="0.5" color="0,0,1"/>
+    <vType id="truck" length="7.50" maxSpeed="25.00" accel="1.0" decel="3.0" sigma="0.5" color="1,0,0"/>
+    <vType id="bus" length="12.00" maxSpeed="22.00" accel="1.2" decel="2.5" sigma="0.3" color="0,1,0"/>
+    <vType id="ego_type" length="5.00" maxSpeed="30.00" accel="2.6" decel="4.5" sigma="0.0" color="1,1,0"/>
+
+    <route id="ego_route" edges="E0 E3"/>
+    <vehicle id="ego" type="ego_type" route="ego_route" depart="0" departLane="0" departSpeed="10"/>
+    
+    <!-- Random Traffic Flows -->
+    <!-- North (J4) to other directions -->
+    <flow id="north_to_south" type="passenger_car" begin="0.00" from="-E3" to="E2" end="3600.00" vehsPerHour="400" departLane="random" departSpeed="random"/>
+    <flow id="north_to_west" type="passenger_car" begin="0.00" from="-E3" to="-E0" end="3600.00" vehsPerHour="100" departLane="random" departSpeed="random"/>
+    <flow id="north_to_east" type="passenger_car" begin="0.00" from="-E3" to="E1" end="3600.00" vehsPerHour="200" departLane="random" departSpeed="random"/>
+    <flow id="north_truck" type="truck" begin="0.00" from="-E3" to="E2" end="3600.00" vehsPerHour="100" departLane="random" departSpeed="random"/>
+    
+    <!-- South (J3) to other directions -->
+    <flow id="south_to_north" type="passenger_car" begin="0.00" from="-E2" to="E3" end="3600.00" vehsPerHour="350" departLane="random" departSpeed="random"/>
+    <flow id="south_to_west" type="passenger_car" begin="0.00" from="-E2" to="-E0" end="3600.00" vehsPerHour="50" departLane="random" departSpeed="random"/>
+    <flow id="south_to_east" type="passenger_car" begin="0.00" from="-E2" to="E1" end="3600.00" vehsPerHour="150" departLane="random" departSpeed="random"/>
+    <flow id="south_bus" type="bus" begin="0.00" from="-E2" to="E3" end="3600.00" vehsPerHour="80" departLane="random" departSpeed="random"/>
+    
+    <!-- West (J0) to other directions -->
+    <flow id="west_to_east" type="passenger_car" begin="0.00" from="E0" to="E1" end="3600.00" vehsPerHour="500" departLane="random" departSpeed="random"/>
+    <flow id="west_to_north" type="passenger_car" begin="0.00" from="E0" to="E3" end="3600.00" vehsPerHour="150" departLane="random" departSpeed="random"/>
+    <flow id="west_to_south" type="passenger_car" begin="0.00" from="E0" to="E2" end="3600.00" vehsPerHour="250" departLane="random" departSpeed="random"/>
+    <flow id="west_truck" type="truck" begin="0.00" from="E0" to="E1" end="3600.00" vehsPerHour="120" departLane="random" departSpeed="random"/>
+    
+    <!-- East (J2) to other directions -->
+    <flow id="east_to_west" type="passenger_car" begin="0.00" from="-E1" to="-E0" end="3600.00" vehsPerHour="450" departLane="random" departSpeed="random"/>
+    <flow id="east_to_north" type="passenger_car" begin="0.00" from="-E1" to="E3" end="3600.00" vehsPerHour="100" departLane="random" departSpeed="random"/>
+    <flow id="east_to_south" type="passenger_car" begin="0.00" from="-E1" to="E2" end="3600.00" vehsPerHour="200" departLane="random" departSpeed="random"/>
+    <flow id="east_bus" type="bus" begin="0.00" from="-E1" to="-E0" end="3600.00" vehsPerHour="70" departLane="random" departSpeed="random"/>
+    
+    <!-- Peak time additional flows (morning rush) -->
+    <flow id="morning_north_to_south" type="passenger_car" begin="7200.00" from="-E3" to="E2" end="10800.00" vehsPerHour="800" departLane="random" departSpeed="random"/>
+    <flow id="morning_west_to_east" type="passenger_car" begin="7200.00" from="E0" to="E1" end="10800.00" vehsPerHour="1000" departLane="random" departSpeed="random"/>
+    
+    <!-- Peak time additional flows (evening rush) -->
+    <flow id="evening_south_to_north" type="passenger_car" begin="57600.00" from="-E2" to="E3" end="68400.00" vehsPerHour="900" departLane="random" departSpeed="random"/>
+    <flow id="evening_east_to_west" type="passenger_car" begin="57600.00" from="-E1" to="-E0" end="68400.00" vehsPerHour="1100" departLane="random" departSpeed="random"/>
+    
+
+
+</routes>
