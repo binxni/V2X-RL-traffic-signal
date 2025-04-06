@@ -9,7 +9,7 @@ from sumolib import checkBinary
 
 # Sumo 시뮬레이터와 PPO를 연동하는 Gym 환경 클래스
 class SumoEnvironment(gym.Env):
-    def __init__(self, sumo_cfg_path, max_steps=1000, gui = True):
+    def __init__(self, sumo_cfg_path, max_steps=1000, gui=True):
         super(SumoEnvironment, self).__init__()
 
         self.gui = gui
@@ -29,7 +29,6 @@ class SumoEnvironment(gym.Env):
         self.observation_space = spaces.Box(
             low=0, high=1000, shape=(11,), dtype=np.float32)
 
-
     def reset(self):
         if traci.isLoaded():
             traci.close()
@@ -41,9 +40,9 @@ class SumoEnvironment(gym.Env):
 
         traci.start(sumo_cmd)
         self.step_count = 0
-        
+
         # ✅ 신호등 제어 초기 설정 (여기 추가)
-        #traci.trafficlight.setProgram("J1", "0")  # tlLogic ID "J1", programID "0"
+        # traci.trafficlight.setProgram("J1", "0")  # tlLogic ID "J1", programID "0"
         traci.simulationStep()  # ✅ 반드시 첫 스텝을 실행해서 연결 완료
 
         return self._get_observation()
@@ -74,7 +73,10 @@ class SumoEnvironment(gym.Env):
         current_phase = traci.trafficlight.getPhase("J1")
 
         # 각 진입 차로 ID 리스트
-        incoming_lanes = ["-E3_0", "-E1_0", "-E2_0", "E0_0"]
+        incoming_lanes = ["-E3_0", "-E3_1", "-E3_2",
+                          "-E1_0", "-E1_1", "-E1_2",
+                          "-E2_0", "-E2_1", "-E2_2",
+                          "E0_0", "E0_1", "E0_2"]
 
         # 각 진입 차로의 정체 차량 수 및 평균 속도 수집
         lane_queues = [traci.lane.getLastStepHaltingNumber(
@@ -97,13 +99,12 @@ class SumoEnvironment(gym.Env):
                            for lane in incoming_lanes)
         return -total_halted'''
 
-
     def _compute_reward(self):
         # 모든 진입 차선 (각 방향별 3개 차선씩)
         incoming_lanes = ["-E3_0", "-E3_1", "-E3_2",
-                        "-E1_0", "-E1_1", "-E1_2",
-                        "-E2_0", "-E2_1", "-E2_2",
-                        "E0_0", "E0_1", "E0_2"]
+                          "-E1_0", "-E1_1", "-E1_2",
+                          "-E2_0", "-E2_1", "-E2_2",
+                          "E0_0", "E0_1", "E0_2"]
 
         # 정지 차량 수 (속도 0)
         halts = [traci.lane.getLastStepHaltingNumber(
@@ -111,11 +112,12 @@ class SumoEnvironment(gym.Env):
         total_halted = sum(halts)
 
         # 평균 속도
-        speeds = [traci.lane.getLastStepMeanSpeed(lane) for lane in incoming_lanes]
+        speeds = [traci.lane.getLastStepMeanSpeed(
+            lane) for lane in incoming_lanes]
         avg_speed = np.mean(speeds)
 
-        # 현재 step에서 목적지에 도착한 차량 수
-        arrived_vehicles = traci.simulation.getArrivedNumber()
+        # 목적지에 도착한 차량 수 (비활성화 또는 보조 항목)
+        # arrived_vehicles = traci.simulation.getArrivedNumber()
 
         # 장시간 정지 차량 수 (예: 30초 이상 정지)
         long_waiting = 0
@@ -125,12 +127,22 @@ class SumoEnvironment(gym.Env):
             if speed < 0.1 and wait_time >= 30:
                 long_waiting += 1
 
-        # ✅ 최종 보상 
+        # ✅ 각 차선 밀도 계산: 차량 수 / 차선 길이
+        densities = []
+        for lane in incoming_lanes:
+            veh_num = traci.lane.getLastStepVehicleNumber(lane)
+            length = traci.lane.getLength(lane)
+            if length > 0:
+                densities.append(veh_num / length)
+
+        avg_density = np.mean(densities)
+
+        # ✅ 최종 보상 계산 (density는 감점 요인으로 추가)
         reward = (
             -1.0 * total_halted +
-            +1.0 * arrived_vehicles +
             +2.0 * avg_speed +
-            -0.5 * long_waiting
+            -0.5 * long_waiting +
+            -3.0 * avg_density  # ⬅️ 중요: 이 값은 실험하면서 튜닝
         )
 
         return reward

@@ -3,7 +3,7 @@
 import os
 
 # === SUMO 환경 설정 ===
-#USE_GUI = True  # True면 sumo-gui, False면 CLI(sumod)
+#USE_GUI = False  # True면 sumo-gui, False면 CLI(sumod)
 USE_GUI = True
 SUMO_BINARY = "sumo-gui" if USE_GUI else "sumo"
 #SUMO_CONFIG_FILE = os.path.join("env", "RL_0331.sumocfg")  # sumo config 파일 경로
