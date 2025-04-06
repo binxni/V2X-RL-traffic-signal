@@ -18,12 +18,12 @@ T_HORIZON = 1024           # 한 에피소드에서 수집할 step 수
 
 
 # === 에이전트 설정 ===
-STATE_DIM = 11             # 상태 벡터 차원 (state 정의에 따라 수정 가능)
+STATE_DIM = 27             # 상태 벡터 차원 (state 정의에 따라 수정 가능)
 ACTION_DIM = 4             # 행동 차원 (ex. 4개의 신호 조합 등)
 HIDDEN_DIM = 64            # NN 히든 레이어 차원
 
 # === 학습 설정 ===
-MAX_EPISODES = 20         # 총 학습할 에피소드 수
+MAX_EPISODES = 100         # 총 학습할 에피소드 수
 LOG_INTERVAL = 2          # 몇 에피소드마다 로그 출력
 MODEL_SAVE_PATH = os.path.join("models", "ppo_sumo.pth")
 SEED = None                # None이면 매번 랜덤, 아니면 시드 고정
