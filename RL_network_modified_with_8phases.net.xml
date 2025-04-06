@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-04-05 23:59:39 by Eclipse SUMO netedit Version 1.20.0
+<!-- generated on 2025-04-06 15:36:09 by Eclipse SUMO netedit Version 1.20.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
 
     <input>
@@ -123,7 +123,6 @@
         <phase duration="20" state="rrGrrrrrrrrrGrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrGGrrrrrGrG"/>
     </tlLogic>
-
 
     <junction id="J0" type="dead_end" x="-150.21" y="-66.85" incLanes="-E0_0 -E0_1 -E0_2" intLanes="" shape="-150.21,-66.85 -150.21,-57.25 -150.21,-66.85"/>
     <junction id="J1" type="traffic_light" x="5.36" y="-66.85" incLanes="-E3_0 -E3_1 -E3_2 -E1_0 -E1_1 -E1_2 -E2_0 -E2_1 -E2_2 E0_0 E0_1 E0_2" intLanes=":J1_0_0 :J1_1_0 :J1_2_0 :J1_3_0 :J1_4_0 :J1_5_0 :J1_6_0 :J1_7_0 :J1_8_0 :J1_9_0 :J1_10_0 :J1_11_0" shape="-4.24,-53.25 14.96,-53.25 15.40,-55.47 15.96,-56.25 16.74,-56.81 17.74,-57.14 18.96,-57.25 18.96,-76.45 16.74,-76.89 15.96,-77.45 15.40,-78.23 15.07,-79.23 14.96,-80.45 -4.24,-80.45 -4.68,-78.23 -5.24,-77.45 -6.02,-76.89 -7.02,-76.56 -8.24,-76.45 -8.24,-57.25 -6.02,-56.81 -5.24,-56.25 -4.68,-55.47 -4.35,-54.47">
