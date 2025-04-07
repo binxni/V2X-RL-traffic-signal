@@ -18,9 +18,9 @@ class PolicyNetwork(nn.Module):
         super(PolicyNetwork, self).__init__()
         self.fc = nn.Sequential(
             nn.Linear(state_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, 5)  # phase4개와 duration 1개
         )
 
@@ -35,9 +35,9 @@ class ValueNetwork(nn.Module):
         super(ValueNetwork, self).__init__()
         self.fc = nn.Sequential(
             nn.Linear(state_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, 1)
         )
 
@@ -64,8 +64,6 @@ class PPOAgent:
         self.memory = []  # Transition 저장 리스트
         self.total_steps = 0
 
-
-    
     def select_action(self, state):
         state_tensor = torch.FloatTensor(state).unsqueeze(0)
 
@@ -79,14 +77,14 @@ class PPOAgent:
         phase_dist = torch.distributions.Categorical(phase_probs)
         phase = phase_dist.sample().item()
         log_prob = phase_dist.log_prob(torch.tensor(phase))
-        
+
         # ✅ phase 카운트 추가
         self.phase_counter[phase] += 1
 
         # Duration: 정규 분포 기반 샘플링 (혹은 tanh 등 활용)
-        #duration = int(np.clip(duration_raw.item(), 5, 60))
+        # duration = int(np.clip(duration_raw.item(), 5, 60))
         duration = int(5 + 55 * torch.sigmoid(duration_raw).item())
-        
+
         return np.array([phase, duration]), log_prob
 
     def store_transition(self, *args):
@@ -144,7 +142,7 @@ class PPOAgent:
             surr2 = torch.clamp(ratio, 1.0 - self.clip_eps,
                                 1.0 + self.clip_eps) * advantages
             policy_loss = -torch.min(surr1, surr2).mean()
-            
+
             # ✅ 엔트로피 보너스 추가
             entropy = dist.entropy().mean()  # 평균 엔트로피
             entropy_coeff = 0.05  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
@@ -163,7 +161,6 @@ class PPOAgent:
             policy_loss.backward()
             self.optimizer_policy.step()
 
-
             # ✅ phase 선택 분포 기록
             total = sum(self.phase_counter.values())
             if total > 0:
@@ -171,7 +168,7 @@ class PPOAgent:
                     ratio = self.phase_counter[p] / total
                     # or self.episode if 있음
                     self.writer.add_scalar("Phase/Selection_Ratio",
-                                        ratio, self.total_steps)
+                                           ratio, self.total_steps)
             self.phase_counter.clear()  # 에피소드별 초기화
 
         self.memory = []

@@ -121,7 +121,7 @@
         <phase duration="20" state="rrrrrrrGrrrrrrrrrGr"/>
         <phase duration="20" state="rrrrGrrrrrrrrrGrrrr"/>
         <phase duration="20" state="rrGrrrrrrrrrGrrrrrr"/>
-        <phase duration="20" state="rrrrrrrrrGGrrrrrGrG"/>
+        <phase duration="20" state="rrrrrrrrrGrrrrrrrrG"/>
     </tlLogic>
 
     <junction id="J0" type="dead_end" x="-150.21" y="-66.85" incLanes="-E0_0 -E0_1 -E0_2" intLanes="" shape="-150.21,-66.85 -150.21,-57.25 -150.21,-66.85"/>
