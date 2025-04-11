@@ -138,11 +138,17 @@ class SumoEnvironment(gym.Env):
         avg_density = np.mean(densities)
 
         # ✅ 최종 보상 계산 (density는 감점 요인으로 추가)
-        reward = (
+        '''reward = (
             -1.0 * total_halted +
             +2.0 * avg_speed +
             -0.5 * long_waiting +
             -3.0 * avg_density  # ⬅️ 중요: 이 값은 실험하면서 튜닝
+        )'''
+        reward = (
+            -1.0 * (total_halted / 13.0) +
+            +2.0 * (avg_speed / 13.9) +
+            -2.0 * (long_waiting / 1.0) +
+            -1.0 * (avg_density / 0.0156)
         )
 
         return reward

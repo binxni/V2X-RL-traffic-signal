@@ -4,7 +4,7 @@ import datetime
 import torch
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
-
+from utils import save_hyperparams_to_csv
 from env_sumo import SumoEnvironment
 from ppo_agent import PPOAgent
 from config import *
@@ -41,6 +41,9 @@ def main():
 
     os.makedirs("models_backup", exist_ok=True)
 
+    # 학습 시작 전에 한번만 저장
+    save_hyperparams_to_csv(config, entropy_coeff=0.2) 
+     
     # --- 학습 루프 시작 ---
     for episode in range(1, MAX_EPISODES + 1):
         state = env.reset()

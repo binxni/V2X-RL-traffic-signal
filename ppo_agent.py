@@ -81,9 +81,12 @@ class PPOAgent:
         # ✅ phase 카운트 추가
         self.phase_counter[phase] += 1
 
+
         # Duration: 정규 분포 기반 샘플링 (혹은 tanh 등 활용)
         # duration = int(np.clip(duration_raw.item(), 5, 60))
-        duration = int(5 + 55 * torch.sigmoid(duration_raw).item())
+        # duration = int(5 + 55 * torch.sigmoid(duration_raw).item())
+        # 기존 sigmoid 방식 대신 tanh로 교체
+        duration = int(30 + 30 * torch.tanh(duration_raw).item())  # 5 ~ 60 범위
 
         return np.array([phase, duration]), log_prob
 
@@ -99,6 +102,11 @@ class PPOAgent:
         rewards = [t.reward for t in self.memory]
         masks = [0.0 if t.done else 1.0 for t in self.memory]
 
+        # ✅ 리워드 정규화 (평균 0, 표준편차 1)
+        rewards = np.array(rewards)
+        rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-8)
+        rewards = rewards.tolist()
+    
         values = torch.cat([values, next_value.unsqueeze(0)])
         gae = 0
         returns = []
@@ -110,7 +118,12 @@ class PPOAgent:
             gae = delta + self.gamma * LAMBDA * masks[step] * gae
             returns.insert(0, gae + values[step])
 
-        return returns, [r - v.item() for r, v in zip(returns, values[:-1])]
+        # ✅ advantage 계산 후 정규화 (PPO 안정화 목적)
+        advantages = [r - v.item() for r, v in zip(returns, values[:-1])]
+        advantages = torch.FloatTensor(advantages)
+        advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+
+        return returns, advantages.tolist()
 
     def update(self, next_state, done):
         # 정책 및 가치 네트워크 업데이트 (PPO 핵심)
@@ -145,7 +158,7 @@ class PPOAgent:
 
             # ✅ 엔트로피 보너스 추가
             entropy = dist.entropy().mean()  # 평균 엔트로피
-            entropy_coeff = 0.05  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
+            entropy_coeff = 0.2  # 탐험 비중 조절 하이퍼파라미터 (값이 크면 탐험 증가)
             policy_loss = policy_loss - entropy_coeff * entropy  # 엔트로피를 보너스로 추가
 
             # ✅ Value loss는 그대로
